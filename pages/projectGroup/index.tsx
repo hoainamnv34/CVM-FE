@@ -172,9 +172,9 @@ const ProjectGroup = () => {
                 <div className="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
                     <h5 className="text-lg font-semibold dark:text-white-light">Project Groups</h5>
                     <div className="flex ltr:ml-auto rtl:mr-auto">
-                        <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                        {/* <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} /> */}
                         <button type="button" className="btn btn-primary ml-4" onClick={() => editUser()}>
-                            Add Project Groups
+                            Add Project Group
                         </button>
                     </div>
                 </div>
@@ -258,7 +258,7 @@ const ProjectGroup = () => {
                                         <IconX />
                                     </button>
                                     <div className="bg-[#fbfbfb] py-3 text-lg font-medium ltr:pl-5 ltr:pr-[50px] rtl:pl-[50px] rtl:pr-5 dark:bg-[#121c2c]">
-                                        {params.id ? 'Edit Project Groups' : 'Add Project Groups'}
+                                        {params.id ? 'Edit Project Groups' : 'Add Project Group'}
                                     </div>
                                     <div className="p-5">
                                         <form>

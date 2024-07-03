@@ -12,6 +12,7 @@ interface DescriptionProps {
     isUrl?: boolean;
     notEdit?: boolean;
     html?: boolean;
+    url?: string;
 }
 
 export function Description(props: DescriptionProps) {

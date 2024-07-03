@@ -561,7 +561,7 @@ const Index = () => {
             </div>
             <div className="panel h-full p-0 lg:col-span-2">
                 <div className="mb-5 flex items-start justify-between border-b border-white-light p-5  dark:border-[#1b2e4b] dark:text-white-light">
-                    <h5 className="text-lg font-semibold ">Finding by Projects</h5>
+                    <h5 className="text-lg font-semibold ">Findings by Project</h5>
                     <div className="w-[200px]">
                         <Select defaultValue={selectedOption} onChange={setSelectedOption} placeholder="Choose Groups..." options={getOptions(data?.data ?? [])} isSearchable={false} />
                     </div>

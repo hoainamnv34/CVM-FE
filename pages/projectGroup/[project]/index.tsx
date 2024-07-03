@@ -175,14 +175,14 @@ export default function Project() {
                     { name: dataLocalStore?.name || '', link: `/projectGroup/${dataLocalStore?.id}`, active: true },
                 ]}
             />
-            <Description className={'mt-4'} text={dataLocalStore?.description} />
+            <Description className={'mt-4'} text={dataLocalStore?.description}  />
             <div className="panel mt-4">
                 <div className="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
                     <div>
                         <h5 className="text-lg font-semibold dark:text-white-light">Project {dataLocalStore?.name}</h5>
                     </div>
                     <div className="flex ltr:ml-auto rtl:mr-auto">
-                        <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                        {/* <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} /> */}
                         <button type="button" className="btn btn-primary ml-4" onClick={() => editUser()}>
                             Add Project
                         </button>

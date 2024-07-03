@@ -101,7 +101,7 @@ const themeConfigSlice = createSlice({
         },
 
         setPageTitle(state, { payload }) {
-            document.title = `${payload} | Vo Hoai Nam`;
+            document.title = `${payload} | CVM`;
         },
     },
 });
