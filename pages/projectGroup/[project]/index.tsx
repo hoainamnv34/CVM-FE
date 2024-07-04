@@ -175,7 +175,7 @@ export default function Project() {
                     { name: dataLocalStore?.name || '', link: `/projectGroup/${dataLocalStore?.id}`, active: true },
                 ]}
             />
-            <Description className={'mt-4'} text={dataLocalStore?.description}  />
+            <Description className={'mt-4'} text={dataLocalStore?.description} url={`/project-groups/${dataLocalStore?.id}`} />
             <div className="panel mt-4">
                 <div className="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
                     <div>

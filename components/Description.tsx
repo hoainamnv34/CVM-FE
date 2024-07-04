@@ -4,6 +4,7 @@ import IconEdit from './Icon/IconEdit';
 import { Dialog, Transition } from '@headlessui/react';
 import IconX from './Icon/IconX';
 import Swal from 'sweetalert2';
+import { useEditDescription } from '@/hooks/app';
 
 interface DescriptionProps {
     className?: string;
@@ -16,6 +17,7 @@ interface DescriptionProps {
 }
 
 export function Description(props: DescriptionProps) {
+    const [{ loading: loadingEdit, error: errorEdit }, doEdit] = useEditDescription();
     const [isEdit, setIsEdit] = useState(false);
     const [text, setText] = useState(props.text ?? '');
     const changeValue = (e: any) => {
@@ -40,6 +42,16 @@ export function Description(props: DescriptionProps) {
 
     const save = () => {
         //TODO: Save the text
+        doEdit({
+            url: `${props.url}`,
+            data: {
+                description: text
+            },
+        }).then((res) => {
+            // if (res.data && res.data.code === 200) {
+            //     refetch();
+            // }
+        });
         showMessage('User has been saved successfully.');
         setIsEdit(false);
     };

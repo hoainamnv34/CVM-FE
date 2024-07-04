@@ -16,6 +16,7 @@ import { PipelinerRunType } from '@/types/pipelineRun';
 import axios from 'axios';
 import { appConfig } from '@/configs';
 import Tippy from '@tippyjs/react';
+import { PipelineEvaluation } from '@/components/PipelineEvaluation';
 
 enum SeverityEnum {
     CRITICAL = 5,
@@ -248,33 +249,11 @@ export default function Pipeline() {
                     <Description className={'mt-4'} text={dataProjectLocalStore?.description} />
                     <Description title="Repository Url" isUrl className={'mt-4'} text={dataProjectLocalStore?.repository_url} />
                 </div>
-                <Description
+                <PipelineEvaluation
                     title="Pipeline Evaluation​"
                     className={'mt-4'}
-                    text={
-                        <div>
-                            <div className="flex">
-                                <div className="w-[200px]">Severity Critical Score​:</div>
-                                <div>{pipelineEvaluations.severity_critical_score}</div>
-                            </div>
-                            <div className="flex">
-                                <div className="w-[200px]">Severity High Score​:</div>
-                                <div>{pipelineEvaluations.severity_high_score}</div>
-                            </div>
-                            <div className="flex">
-                                <div className="w-[200px]">Severity Medium Score​:</div>
-                                <div>{pipelineEvaluations.severity_medium_score}</div>
-                            </div>
-                            <div className="flex">
-                                <div className="w-[200px]">Severity Low Score​: </div>
-                                <div>{pipelineEvaluations.severity_low_score}</div>
-                            </div>
-                            <div className="flex">
-                                <div className="w-[200px]">Threshold Score​: </div>
-                                <div>{pipelineEvaluations.threshold_score}</div>
-                            </div>
-                        </div>
-                    }
+                    data={pipelineEvaluations}
+                    id={dataProjectLocalStore?.id}
                 />
             </div>
             <div className="panel mt-4">

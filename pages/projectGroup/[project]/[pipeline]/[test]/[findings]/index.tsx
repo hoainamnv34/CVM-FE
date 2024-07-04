@@ -21,7 +21,9 @@ export default function Findings() {
     });
 
     const [{ data, error, loading }, refetch] = useFindingsList({
-        test_id: router.query.findings,
+        parent_id: router.query.findings,
+        parent_type: 4
+
     });
     const [{ loading: loadingDelete, error: errorDelete }, doDelete] = useDeleteFindings();
 
@@ -150,7 +152,7 @@ export default function Findings() {
             case 2:
                 return 'LOW';
             default:
-                return 'Info';
+                return 'INFO';
         }
     };
 
@@ -248,7 +250,11 @@ export default function Findings() {
                                     return <div>{convertSeverity(record.severity)}</div>;
                                 },
                             },
-                            { accessor: 'cwe' },
+                            { accessor: 'cwe',
+                                render: (record: any) => {
+                                    return <div>{record.cwe == 0 ? " " : record.cwe}</div>;
+                                },
+                            },
                             {
                                 accessor: 'status',
                                 render: (record: any) => {

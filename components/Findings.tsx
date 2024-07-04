@@ -136,7 +136,7 @@ export function Findings(props: FindingsProps) {
             case 2:
                 return 'LOW';
             default:
-                return 'Info';
+                return 'INFO';
         }
     };
 
@@ -159,7 +159,7 @@ export function Findings(props: FindingsProps) {
     }, [search]);
 
     useEffect(() => {
-        if (props.apiData) {
+        if (props.apiData && !props.apiData.includes('undefined')) {
             axios.get(props.apiData).then((res) => {
                 setInitialRecords(res.data.data);
             });

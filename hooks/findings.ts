@@ -5,15 +5,15 @@ export interface GetParams {
     per_page?: number;
     page?: number;
     findings?: number | string | string[];
-    id?: number | string | string[];
-    test_id?: number | string | string[];
+    parent_id?: number | string | string[];
+    parent_type?: number | string | string[];
 }
 
 function useFindingsList(params: GetParams) {
     const { page = 0, per_page = 10, keyword = '' } = params ?? {};
     return useAxios({
         method: 'GET',
-        url: '/findings',
+        url: '/findings/parent',
         params,
     });
 }

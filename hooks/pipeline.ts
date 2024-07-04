@@ -13,7 +13,7 @@ function usePipelineList(params: GetParams) {
     return useAxios({
         method: 'GET',
         url: '/pipeline-runs',
-        params,
+        params: params.project_id !== undefined ? params : {},
     });
 }
 
