@@ -8,10 +8,34 @@ import IconX from '@/components/Icon/IconX';
 import { useRouter } from 'next/router';
 import Tippy from '@tippyjs/react';
 import axios from 'axios';
+import IconTrashLines from './Icon/IconTrashLines';
+import IconXCircle from './Icon/IconXCircle';
+import IconInfoHexagon from './Icon/IconInfoHexagon';
+import { appConfig } from '@/configs';
 
 interface FindingsProps {
     apiData?: string;
     id?: number | string;
+}
+
+interface Finding {
+    id?: number;
+    title?: string;
+    description?: string;
+    severity?: number;
+    cwe?: number;
+    line?: number;
+    file_path?: string;
+    vuln_id_from_tool?: string;
+    mitigation?: string;
+    reference?: string;
+    active?: boolean;
+    dynamic_finding?: boolean;
+    duplicate?: boolean;
+    risk_accepted?: boolean;
+    static_finding?: boolean;
+    created_at?: string;
+    updated_at?: string;
 }
 
 export function Findings(props: FindingsProps) {
@@ -27,8 +51,8 @@ export function Findings(props: FindingsProps) {
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
 
-    const [initialRecords, setInitialRecords] = useState([]);
-    const [recordsData, setRecordsData] = useState(initialRecords);
+    const [initialRecords, setInitialRecords] = useState<Finding[]>([]);
+    const [recordsData, setRecordsData] = useState<Finding[]>(initialRecords);
 
     const [selectedRecords, setSelectedRecords] = useState<any>([]);
 
@@ -52,10 +76,66 @@ export function Findings(props: FindingsProps) {
         setAddContactModal(true);
     };
 
-    const deleteUser = (user: any = null) => {
-        console.log('user', user);
-        setInitialRecords(recordsData.filter((d: any) => d.id !== user.id));
-        showMessage('User has been deleted successfully.');
+    const deleteFinding = (finding: any = null) => {
+        if (!finding) return;
+
+        axios
+            .delete(`${appConfig.apiBe}/findings/${finding.id}`)
+            .then(() => {
+                setInitialRecords(recordsData.filter((d: any) => d.id !== finding.id));
+                showMessage('Finding has been deleted successfully.');
+            })
+            .catch((error) => {
+                console.error('There was an error deleting the finding!', error);
+            });
+    };
+
+    const toggleRiskAcceptanceFinding = (finding: any = null) => {
+        if (!finding) return;
+
+        axios
+            .put(`${appConfig.apiBe}/findings/risk-accept/${finding.id}`)
+            .then((response) => {
+                // const updatedFinding = response.data.data;
+                setInitialRecords(
+                    recordsData.map((record) => {
+                        if (record.id === finding.id) {
+                            record.risk_accepted = !record.risk_accepted;
+                        }
+                        return record;
+                    })
+                );
+                showMessage(`Risk acceptance for the finding has been ${!finding.risk_accepted ? 'accepted' : 'unaccepted'} successfully.`);
+            })
+            .catch((error) => {
+                console.error('There was an error toggling risk acceptance for the finding!', error);
+            });
+    };
+
+    const toggleFindingStatus = (finding: any = null) => {
+        if (!finding) return;
+
+        const newStatus = !finding.active;
+        // const action = newStatus ? 'open' : 'close';
+
+        axios
+            .put(`${appConfig.apiBe}/findings/toggle-status/${finding.id}`)
+            .then((response) => {
+                // const updatedFinding = response.data.data;
+                setInitialRecords(
+                    recordsData.map((record) => {
+                        if (record.id === finding.id) {
+                            record.active = !record.active;
+                        }
+                        return record;
+                    })
+                );
+
+                showMessage(`Finding has been ${newStatus ? 'opened' : 'closed'} successfully.`);
+            })
+            .catch((error) => {
+                console.error(`There was an error ${newStatus ? 'opening' : 'closing'} the finding!`, error);
+            });
     };
 
     const showMessage = (msg = '', type = 'success') => {
@@ -91,18 +171,6 @@ export function Findings(props: FindingsProps) {
             user.severity = params.severity;
             user.cwe = params.cwe;
             user.status = params.status;
-        } else {
-            //add user
-            // let maxUserId = initialRecords.length ? initialRecords.reduce((max: any, character: any) => (character.id > max ? character.id : max), initialRecords[0].id) : 0;
-            // let user = {
-            //     id: maxUserId + 1,
-            //     name: params.name,
-            //     severity: params.severity,
-            //     cwe: params.cwe,
-            //     status: params.status,
-            // };
-            // initialRecords.splice(0, 0, user);
-            //   searchContacts();
         }
 
         showMessage('User has been saved successfully.');
@@ -160,7 +228,7 @@ export function Findings(props: FindingsProps) {
 
     useEffect(() => {
         if (props.apiData && !props.apiData.includes('undefined')) {
-            axios.get(props.apiData).then((res) => {
+            axios.get(`${props.apiData}&size=0`).then((res) => {
                 setInitialRecords(res.data.data);
             });
         }
@@ -172,7 +240,7 @@ export function Findings(props: FindingsProps) {
                 <div className="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
                     <h5 className="text-lg font-semibold dark:text-white-light">Findings</h5>
                     <div className="ltr:ml-auto rtl:mr-auto">
-                        <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                        {/* <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} /> */}
                     </div>
                 </div>
                 <div className="datatables">
@@ -183,11 +251,11 @@ export function Findings(props: FindingsProps) {
                             { accessor: 'id' },
                             {
                                 accessor: 'title',
-                                cellsClassName: 'max-w-[250px] w-[250px]',
+                                cellsClassName: 'max-w-[350px] w-[350px]',
                                 render: (record: any) => {
                                     return (
                                         <Tippy content={record.title}>
-                                            <div className="w-[200px] overflow-hidden text-ellipsis whitespace-nowrap ">{record.title}</div>
+                                            <div className="w-[300px] overflow-hidden text-ellipsis whitespace-nowrap ">{record.title}</div>
                                         </Tippy>
                                     );
                                 },
@@ -198,19 +266,34 @@ export function Findings(props: FindingsProps) {
                                     return <div>{convertSeverity(record.severity)}</div>;
                                 },
                             },
-                            { accessor: 'cwe' },
                             {
-                                accessor: 'status',
+                                accessor: 'cwe',
+                                title: 'CWE',
                                 render: (record: any) => {
-                                    return <div>{record.active ? 'Active' : 'Inactive'}</div>;
+                                    // return <div>{record.cwe == 0 ? ' ' : record.cwe}</div>;
+                                    return (
+                                        <a href={`https://cwe.mitre.org/data/definitions/${record.cwe}.html`} target="_blank" rel="noopener noreferrer">
+                                            {record.cwe == 0 ? ' ' : record.cwe}
+                                        </a>
+                                    );
                                 },
                             },
                             {
-                                accessor: 'foundBy​',
-                                title: 'Found By',
-                                render: () => {
-                                    return <div className="">Admin</div>;
+                                accessor: 'status',
+                                render: (record: any) => {
+                                    return (
+                                        <div>
+                                            {record.active ? 'Active' : 'Inactive'} {record.risk_accepted ? ', Risk Accepted' : ''}
+                                        </div>
+                                    );
                                 },
+                            },
+                            {
+                                accessor: 'file_path',
+                                title: 'Location',
+                                // render: () => {
+                                //     return <div className="">Admin</div>;
+                                // },
                             },
                             {
                                 accessor: 'action',
@@ -218,22 +301,50 @@ export function Findings(props: FindingsProps) {
                                 titleClassName: '!text-center',
                                 render: (record) => {
                                     return (
-                                        <div className="flex items-center justify-center gap-4">
-                                            {/* <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(record)}>
-                                                Edit
-                                            </button> */}
-                                            <button
-                                                type="button"
-                                                className="btn btn-sm btn-outline-danger"
-                                                onClick={(e) => {
-                                                    e.defaultPrevented;
-                                                    e.stopPropagation();
-                                                    deleteUser(record);
-                                                }}
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
+                                        <ul className="flex items-center justify-center gap-2">
+                                            <li>
+                                                <Tippy content={`${record.active ? 'Close' : 'Reopen'}`}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.defaultPrevented;
+                                                            e.stopPropagation();
+                                                            toggleFindingStatus(record);
+                                                        }}
+                                                    >
+                                                        <IconXCircle className={`text-success`} />
+                                                    </button>
+                                                </Tippy>
+                                            </li>
+                                            <li>
+                                                <Tippy content={`${!record.risk_accepted ? 'Accept Risk' : 'Unaccept Risk'}`}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.defaultPrevented;
+                                                            e.stopPropagation();
+                                                            toggleRiskAcceptanceFinding(record);
+                                                        }}
+                                                    >
+                                                        <IconInfoHexagon className={`h-5 w-5 text-primary `} />
+                                                    </button>
+                                                </Tippy>
+                                            </li>
+                                            <li>
+                                                <Tippy content="Delete">
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.defaultPrevented;
+                                                            e.stopPropagation();
+                                                            deleteFinding(record);
+                                                        }}
+                                                    >
+                                                        <IconTrashLines className="text-danger" />
+                                                    </button>
+                                                </Tippy>
+                                            </li>
+                                        </ul>
                                     );
                                 },
                             },

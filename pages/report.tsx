@@ -44,7 +44,7 @@ export default function Report() {
             showMessage('Select is required.', 'error');
             return true;
         }
-        axios.get(`${appConfig.apiBe}/findings?project_id=${selectedOption2['value']}`).then((res) => {
+        axios.get(`${appConfig.apiBe}/findings?project_id=${selectedOption2['value']}&size=0`).then((res) => {
             console.log('Log LOG::: ', res.data.data);
             setReportData(res.data.data);
         });

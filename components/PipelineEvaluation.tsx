@@ -64,9 +64,9 @@ export function PipelineEvaluation(props: DescriptionProps) {
     }, [props.data]);
     return (
         <>
-            <div className={`panel items-center overflow-x-auto whitespace-nowrap p-3 text-primary ${props.className}`}>
+            <div className={`panel items-center overflow-x-auto whitespace-nowrap p-3 ${props.className}`}>
                 <div className="flex items-center justify-between ring-primary/30 ltr:mr-3 rtl:ml-3">
-                    <span className="text-lg font-bold text-blue-500">Edit</span>
+                    <span className="text-lg font-bold text-blue-500">Pipeline Evaluation</span>
                     {props.notEdit ? null : (
                         <span onClick={() => setIsEdit(true)}>
                             <IconEdit />

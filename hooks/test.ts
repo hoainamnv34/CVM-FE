@@ -5,14 +5,14 @@ export interface GetParams {
     per_page?: number;
     page?: number;
     pipeline_run_id?: number | string | string[];
+    url?: string;
 }
 
 function useTestList(params: GetParams) {
     const { page = 0, per_page = 10, keyword = '' } = params ?? {};
     return useAxios({
         method: 'GET',
-        url: '/tests',
-        params,
+        url: params.url ?? '/',
     });
 }
 

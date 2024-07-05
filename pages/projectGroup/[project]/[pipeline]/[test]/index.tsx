@@ -22,7 +22,7 @@ export default function Test() {
     });
 
     const [{ data, error, loading }, refetch] = useTestList({
-        pipeline_run_id: router.query.test,
+        url: `/pipeline-runs/test-list/${router.query.test}`,
     });
 
     const [lastClickTime, setLastClickTime] = useState(0);
@@ -131,7 +131,7 @@ export default function Test() {
             if (currentTime - lastClickTime < doubleClickThreshold) {
                 console.log('Double click detected', data);
                 // Thực hiện hành động khi phát hiện double-click ở đây
-                router.push(`${router.asPath}/${data.id}`);
+                router.push(`${router.asPath}/${data.test_id}`);
                 window.localStorage.setItem('test', JSON.stringify(data));
             } else {
                 console.log('Single click detected', data);
@@ -151,13 +151,13 @@ export default function Test() {
         setRecordsData([...initialRecords.slice(from, to)]);
     }, [page, pageSize, initialRecords]);
 
-    useEffect(() => {
-        setInitialRecords(() => {
-            return initialRecords.filter((item: any) => {
-                return item.id.toString().includes(search.toLowerCase()) || item.name.toLowerCase().includes(search.toLowerCase()) || item.description.toLowerCase().includes(search.toLowerCase());
-            });
-        });
-    }, [search]);
+    // useEffect(() => {
+    //     setInitialRecords(() => {
+    //         return initialRecords.filter((item: any) => {
+    //             return item.id.toString().includes(search.toLowerCase()) || item.name.toLowerCase().includes(search.toLowerCase()) || item.description.toLowerCase().includes(search.toLowerCase());
+    //         });
+    //     });
+    // }, [search]);
 
     useEffect(() => {
         setDataProjectGroupsLocalStore(JSON.parse(window.localStorage.getItem('projectGroups') || ''));
@@ -231,7 +231,7 @@ export default function Test() {
                         className="table-hover whitespace-nowrap"
                         records={recordsData}
                         columns={[
-                            { accessor: 'id' },
+                            { accessor: 'test_id' },
                             { accessor: 'name' },
                             {
                                 accessor: 'date',
@@ -239,7 +239,7 @@ export default function Test() {
                                     return <span>{moment(record.created_at).format('HH:mm:ss DD/MM/YYYY')}</span>;
                                 },
                             },
-                            { accessor: 'total_findings' },
+                            { accessor: 'total_finding' },
                             { accessor: 'active' },
                             { accessor: 'duplicates' },
                         ]}
@@ -258,7 +258,7 @@ export default function Test() {
                     />
                 </div>
             </div>
-            <Findings />
+            <Findings apiData={`${appConfig.apiBe}/findings/parent?parent_id=${dataPipelineLocalStore?.id}&parent_type=3`} />
         </div>
     );
 }

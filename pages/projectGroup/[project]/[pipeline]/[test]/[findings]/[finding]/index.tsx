@@ -6,7 +6,9 @@ import { useRouter } from 'next/router';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Description } from '@/components/Description';
 import { useFindingId } from '@/hooks/findings';
+import ReactMarkdown from 'react-markdown';
 import moment from 'moment';
+import Markdown from 'react-markdown';
 
 export default function Finding() {
     const router = useRouter();
@@ -31,34 +33,70 @@ export default function Finding() {
         setDataFindingLocalStore(JSON.parse(window.localStorage.getItem('findings') || ''));
     }, [typeof window]);
 
-    const duplicateFindings = [
-        {
-            id: 1,
-            severity: 'John Doe',
-            title: 'Complete',
-            test: 'Web',
-            status: 'Complete',
-            type: 'Web',
-            date: '10/08/2020',
-            cwe: 'CWE-123',
-            vulnerabilityId: 'V-123',
-            file: 'File',
-            foundBy: 'John Doe',
-        },
-        {
-            id: 2,
-            severity: 'John Doe',
-            title: 'Complete',
-            test: 'Web',
-            status: 'Complete',
-            type: 'Web',
-            date: '10/08/2020',
-            cwe: 'CWE-123',
-            vulnerabilityId: 'V-123',
-            file: 'File',
-            foundBy: 'John Doe',
-        },
-    ];
+    const convertSeverity = (severity: number) => {
+        switch (severity) {
+            case 5:
+                return 'CRITICAL';
+            case 4:
+                return 'HIGH';
+            case 3:
+                return 'MEDIUM';
+            case 2:
+                return 'LOW';
+            default:
+                return 'INFO';
+        }
+    };
+
+    const references_list = data?.data?.reference.split('\n');
+    const references = `
+        <div>
+            ${references_list
+                ?.map(
+                    (line: any, index: any) => `
+            <p key=${index}>
+                <a href="${line}" target="_blank" rel="noopener noreferrer">${line}</a>
+            </p>
+            `
+                )
+                .join('')}
+        </div>
+    `;
+
+    const description_list = data?.data?.description.split('\n');
+    const description = `
+        <div>
+            ${description_list
+                ?.map(
+                    (line: any, index: any) => `
+                <ReactMarkdown>${line}</ReactMarkdown>
+            `
+                )
+                .join('')}
+        </div>
+    `;
+
+    // useEffect(() => {
+    //     console.log(description_list);
+    //     console.log(description);
+    // }, [description]);
+    const [repoURL, setRepoURL] = useState('');
+    const [commitHash, setCommitHash] = useState('');
+    const [filePath, setFilePath] = useState('');
+    const [line, setLine] = useState('');
+    const [linkLocation, setLinkLocation] = useState('');
+
+    useEffect(() => {
+        console.log(dataProjectLocalStore?.repository_url);
+        console.log(dataPipelineLocalStore?.commit_hash);
+        console.log(dataFindingLocalStore?.file_path);
+        console.log(dataFindingLocalStore?.line);
+        setRepoURL(dataProjectLocalStore?.repository_url);
+        setCommitHash(dataPipelineLocalStore?.commit_hash);
+        setFilePath(dataFindingLocalStore?.file_path);
+        setLine(dataFindingLocalStore?.line);
+        setLinkLocation(`${repoURL}/blob/${commitHash}/${filePath}#L${line}`);
+    }, [description]);
 
     return (
         <div>
@@ -83,7 +121,9 @@ export default function Finding() {
                     },
                 ]}
             />
+
             <div className="panel mt-4">
+                <span className="text-lg font-bold text-blue-500">{data?.data?.title}</span>
                 <div className="table-responsive mb-5">
                     <table className="table-hover">
                         <thead>
@@ -95,23 +135,27 @@ export default function Finding() {
                                 <th>Date</th>
                                 <th>CWE</th>
                                 <th>Vulnerability ID</th>
-                                <th>Found By</th>
+                                {/* <th>Found By</th> */}
                             </tr>
                         </thead>
                         <tbody>
                             <tr key={data?.data?.id}>
                                 <td>{data?.data?.id}</td>
-                                <td>{data?.data?.severity}</td>
-                                <td>{data?.data?.active ? 'Active ' : 'Inactive'}</td>
+                                <td>{convertSeverity(data?.data?.severity)}</td>
+                                <td>
+                                    {' '}
+                                    {data?.data?.active ? 'Active' : 'Inactive'} {data?.data?.risk_accepted && ', Risk Accepted'}
+                                </td>
+
                                 <td>
                                     {data?.data?.static_finding ? 'Static' : ''}
                                     &nbsp;
                                     {data?.data?.dynamic_finding ? 'Dynamic' : ''}
                                 </td>
                                 <td>{moment(data?.data?.created_at).format('HH:mm:ss DD/MM/YYYY')}</td>
-                                <td>{data?.data?.cwe}</td>
+                                <td>{data?.data?.cwe ? data?.data?.cwe : ''}</td>
                                 <td>{data?.data?.vuln_id_from_tool}</td>
-                                <td>Admin</td>
+                                {/* <td>Admin</td> */}
                             </tr>
                         </tbody>
                     </table>
@@ -123,52 +167,15 @@ export default function Finding() {
                     <div>Line Number: {data?.data?.line}</div>
                 </div>
             </div> */}
-            <Description title="Location" className={'mt-4'} text={data?.data?.file_path} notEdit />
+            <Description title="Location" className={'mt-4'} isUrl={true} link={`${repoURL}/blob/${commitHash}/${filePath}#L${line}`} text={data?.data?.file_path} notEdit />
             <Description title="Line Number" className={'mt-4'} text={data?.data?.line} notEdit />
-            <div className="panel mt-4">
-                <div className="text-lg font-bold text-blue-500">Duplicate Findings</div>
-                <div className="table-responsive mb-5">
-                    <table className="table-hover">
-                        <thead>
-                            <tr className="dark:!bg-transparent">
-                                <th>Severity</th>
-                                <th>Title</th>
-                                <th>Test</th>
-                                <th>Status</th>
-                                <th>Type</th>
-                                <th>Date</th>
-                                <th>CWE</th>
-                                <th>Vulnerability ID</th>
-                                <th>File</th>
-                                <th>Found By</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {/* {duplicateFindings.map((data) => {
-                                return (
-                                    <tr key={data.id}>
-                                        <td>{data.severity}</td>
-                                        <td>{data.title}</td>
-                                        <td>{data.test}</td>
-                                        <td>{data.status}</td>
-                                        <td>{data.type}</td>
-                                        <td>{data.date}</td>
-                                        <td>{data.cwe}</td>
-                                        <td>{data.vulnerabilityId}</td>
-                                        <td>{data.file}</td>
-                                        <td>{data.foundBy}</td>
-                                    </tr>
-                                );
-                            })} */}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <Description title="History" className={'mt-4'} text="Description History" />
-            <Description className={'mt-4'} text={data?.data?.risk_description} />
-            <Description title="Mitigation" className={'mt-4'} text={data?.data?.mitigation} />
-            <Description title="Steps To Reproduce" className={'mt-4'} text="Description Steps To Reproduce" />
-            <Description title="References" className={'mt-4'} text="Description References" />
+
+            {/* <Description title="History" className={'mt-4'} text="Description History" /> */}
+            <Description className={'mt-4'} isMarkdown={true} text={data?.data?.description} notEdit={true} />
+            <Description title="Mitigation" className={'mt-4'} text={data?.data?.mitigation} notEdit={true} />
+            {/* <Description title="Steps To Reproduce" className={'mt-4'} text="Description Steps To Reproduce" /> */}
+            <Description title="References" className={'mt-4'} html={true} text={references} notEdit={true} />
+            {/* <Markdown>{markdown}</Markdown> */}
         </div>
     );
 }

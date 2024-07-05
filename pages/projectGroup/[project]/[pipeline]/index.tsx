@@ -118,6 +118,20 @@ export default function Pipeline() {
         setParams({ ...params, [id]: value });
     };
 
+   
+
+    const convertStatus = (status: number) => {
+        switch (status) {
+            case 3:
+                return 'Failure';  
+            case 2:
+                return 'Success';
+            default:
+                return 'In progress';
+        }
+    };
+
+
     const saveUser = () => {
         if (!params.name) {
             showMessage('Name is required.', 'error');
@@ -246,8 +260,8 @@ export default function Pipeline() {
             />
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <Description className={'mt-4'} text={dataProjectLocalStore?.description} />
-                    <Description title="Repository Url" isUrl className={'mt-4'} text={dataProjectLocalStore?.repository_url} />
+                    <Description className={'mt-4'} text={dataProjectLocalStore?.description} url={`/projects/${dataProjectLocalStore?.id}`}/>
+                    <Description title="Repository Url" isUrl className={'mt-4'} text={dataProjectLocalStore?.repository_url} field={"repository_url"} url={`/projects/${dataProjectLocalStore?.id}`}/>
                 </div>
                 <PipelineEvaluation
                     title="Pipeline Evaluation​"
@@ -289,7 +303,7 @@ export default function Pipeline() {
                 <div className="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
                     <h5 className="text-lg font-semibold dark:text-white-light">Pipeline Run</h5>
                     <div className="ltr:ml-auto rtl:mr-auto">
-                        <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                        {/* <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} /> */}
                     </div>
                 </div>
                 <div className="datatables">
@@ -307,7 +321,12 @@ export default function Pipeline() {
                             },
                             { accessor: 'commit_hash' },
                             { accessor: 'branch' },
-                            { accessor: 'status' },
+                            { accessor: 'status',
+                                render: (record: any) => {
+                                    return <span>{convertStatus(record.status)}</span>;
+                                }, 
+
+                            },
                             {
                                 accessor: 'action',
                                 title: 'Action',

@@ -5,15 +5,19 @@ import { Dialog, Transition } from '@headlessui/react';
 import IconX from './Icon/IconX';
 import Swal from 'sweetalert2';
 import { useEditDescription } from '@/hooks/app';
+import ReactMarkdown from 'react-markdown';
 
 interface DescriptionProps {
     className?: string;
     text?: any;
     title?: string;
     isUrl?: boolean;
+    link?: string;
     notEdit?: boolean;
     html?: boolean;
     url?: string;
+    field?: string;
+    isMarkdown?: boolean;
 }
 
 export function Description(props: DescriptionProps) {
@@ -42,17 +46,18 @@ export function Description(props: DescriptionProps) {
 
     const save = () => {
         //TODO: Save the text
+        const objData = {
+            [`${props.field ?? 'description'}`]: text,
+        };
         doEdit({
             url: `${props.url}`,
-            data: {
-                description: text
-            },
+            data: objData,
         }).then((res) => {
             // if (res.data && res.data.code === 200) {
             //     refetch();
             // }
         });
-        showMessage('User has been saved successfully.');
+        showMessage('Successfully.');
         setIsEdit(false);
     };
 
@@ -71,14 +76,21 @@ export function Description(props: DescriptionProps) {
                     )}
                 </div>
                 {props.isUrl ? (
-                    <a href={text} target="_blank" className="mt-2 block text-black hover:underline" rel="noreferrer">
+                    <a href={props.link} target="_blank" className="mt-2 block text-black hover:underline" rel="noreferrer">
                         {text}
                     </a>
                 ) : props.html ? (
                     <div dangerouslySetInnerHTML={{ __html: text }} />
+                ) : props.isMarkdown ? (
+                    <div className="text-black">
+                        {text.split('\n').map((line: any, index: any) => (
+                            <ReactMarkdown key={index}>{line}</ReactMarkdown>
+                        ))}
+                    </div>
                 ) : (
                     <span className="mt-2 block text-black hover:underline">{text}</span>
                 )}
+                <div></div>
             </div>
             <Transition appear show={isEdit} as={Fragment}>
                 <Dialog as="div" open={isEdit} onClose={() => setIsEdit(false)} className="relative z-50">

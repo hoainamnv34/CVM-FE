@@ -37,33 +37,90 @@ const styles = StyleSheet.create({
         backgroundColor: '#f6f6f6',
     },
     tableColHeader: {
-        width: '20%',
+        width: '80px',
         borderStyle: 'solid',
         borderColor: '#bfbfbf',
         borderBottomWidth: 1,
         borderRightWidth: 1,
         padding: 5,
+        fontSize: 12,
         fontWeight: 'bold',
     },
-    tableColHeaderId: {
-        width: '50px',
+    tableCol: {
+        width: '80px',
         borderStyle: 'solid',
         borderColor: '#bfbfbf',
         borderBottomWidth: 1,
         borderRightWidth: 1,
         padding: 5,
+    },
+    tableColHeaderPath: {
+        width: '180px',
+        borderStyle: 'solid',
+        borderColor: '#bfbfbf',
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        padding: 5,
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    tableColPath: {
+        width: '180px',
+        borderStyle: 'solid',
+        borderColor: '#bfbfbf',
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        padding: 5,
+    },
+
+    tableColHeaderId: {
+        width: '40px',
+        borderStyle: 'solid',
+        borderColor: '#bfbfbf',
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        padding: 5,
+        fontSize: 12,
         fontWeight: 'bold',
     },
     tableColId: {
-        width: '50px',
+        width: '40px',
         borderStyle: 'solid',
         borderColor: '#bfbfbf',
         borderBottomWidth: 1,
         borderRightWidth: 1,
         padding: 5,
     },
-    tableCol: {
-        width: '20%',
+    tableColHeaderTitle: {
+        width: '240px',
+        borderStyle: 'solid',
+        borderColor: '#bfbfbf',
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        padding: 5,
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    tableColITitle: {
+        width: '240px',
+        borderStyle: 'solid',
+        borderColor: '#bfbfbf',
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        padding: 5,
+    },
+    tableColHeaderSeverty: {
+        width: '80px',
+        borderStyle: 'solid',
+        borderColor: '#bfbfbf',
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        padding: 5,
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    tableColSeverty: {
+        width: '80px',
         borderStyle: 'solid',
         borderColor: '#bfbfbf',
         borderBottomWidth: 1,
@@ -90,6 +147,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderRightWidth: 1,
         padding: 5,
+        fontSize: 12,
         fontWeight: 'bold',
     },
     tableColStatus: {
@@ -101,17 +159,18 @@ const styles = StyleSheet.create({
         padding: 5,
     },
 
-    tableColHeaderCwe: {
-        width: '80px',
+    tableColHeaderNumber: {
+        width: '50px',
         borderStyle: 'solid',
         borderColor: '#bfbfbf',
         borderBottomWidth: 1,
         borderRightWidth: 1,
         padding: 5,
+        fontSize: 12,
         fontWeight: 'bold',
     },
-    tableColCwe: {
-        width: '80px',
+    tableColNumber: {
+        width: '50px',
         borderStyle: 'solid',
         borderColor: '#bfbfbf',
         borderBottomWidth: 1,
@@ -131,7 +190,7 @@ const convertSeverity = (severity: number) => {
         case 2:
             return 'LOW';
         default:
-            return 'Info';
+            return 'INFO';
     }
 };
 
@@ -148,22 +207,22 @@ const MyDocument = ({ data }: { data: any }) => (
                     <View style={styles.tableColHeaderId}>
                         <Text>ID</Text>
                     </View>
-                    <View style={styles.tableColHeader}>
+                    <View style={styles.tableColHeaderTitle}>
                         <Text>Title</Text>
                     </View>
                     <View style={styles.tableColHeader}>
                         <Text>Severity</Text>
                     </View>
-                    <View style={styles.tableColHeaderCwe}>
+                    <View style={styles.tableColHeaderNumber}>
                         <Text>CWE</Text>
                     </View>
                     <View style={styles.tableColHeaderStatus}>
                         <Text>Status</Text>
                     </View>
-                    <View style={styles.tableColHeader}>
+                    <View style={styles.tableColHeaderPath}>
                         <Text>File Path</Text>
                     </View>
-                    <View style={styles.tableColHeaderId}>
+                    <View style={styles.tableColHeaderNumber}>
                         <Text>Line</Text>
                     </View>
                     <View style={styles.tableColHeader}>
@@ -176,22 +235,24 @@ const MyDocument = ({ data }: { data: any }) => (
                         <View style={styles.tableColId}>
                             <Text style={styles.tableCell}>{item.id}</Text>
                         </View>
-                        <View style={styles.tableCol}>
+                        <View style={styles.tableColITitle}>
                             <Text style={styles.tableCell}>{item.title}</Text>
                         </View>
                         <View style={styles.tableCol}>
                             <Text style={styles.tableCell}>{convertSeverity(item.severity)}</Text>
                         </View>
-                        <View style={styles.tableColCwe}>
-                            <Text style={styles.tableCell}>{item.cwe}</Text>
+                        <View style={styles.tableColNumber}>
+                            <Text style={styles.tableCell}>{item.cwe == 0 ? ' ' : item.cwe}</Text>
                         </View>
                         <View style={styles.tableColStatus}>
-                            <Text style={styles.tableCell}>{item.active ? 'Active' : 'Inactive'}</Text>
+                            <Text style={styles.tableCell}>
+                                {item.active ? 'Active' : 'Inactive'} {item.risk_accepted ? ', Risk Accepted' : ''}
+                            </Text>
                         </View>
-                        <View style={styles.tableCol}>
+                        <View style={styles.tableColPath}>
                             <Text style={styles.tableCell}>{item.file_path}</Text>
                         </View>
-                        <View style={styles.tableColId}>
+                        <View style={styles.tableColNumber}>
                             <Text style={styles.tableCell}>{item.line}</Text>
                         </View>
                         <View style={styles.tableCol}>
